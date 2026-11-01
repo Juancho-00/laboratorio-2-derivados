@@ -1,0 +1,7 @@
+pandas>=2.0
+numpy>=1.26
+yfinance>=0.2.40
+scipy>=1.11
+matplotlib>=3.8
+openpyxl>=3.1
+ipykernel
