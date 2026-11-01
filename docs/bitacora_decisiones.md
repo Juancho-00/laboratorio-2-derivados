@@ -6,11 +6,21 @@
 ## Organización del proyecto (01/11/2026)
 
 - Repositorio con 3 notebooks: `00_datos` (Punto 0 / R4), `01_portafolio` (Puntos 1–5), `02_futuros_cobertura` (Puntos 6–12).
-- Entrega prevista: repositorio de GitHub + informe PDF en normas APA ubicado en la raíz, junto al README.md. (Pendiente confirmar con el profesor si reemplaza a RPubs → `pendientes_profesor.md` P1.)
+- Entrega: repositorio de GitHub + informe PDF en normas APA ubicado en la raíz, junto al README.md (resuelto).
+- Entorno: Anaconda, environment `lab2-derivados` (Python 3.11) definido en `environment.yml`; `requirements.txt` se mantiene para quien use pip.
 - Requisitos de la rúbrica no contemplados en el enunciado: integrados en `Puntos_Lab2.md` (v2) y como anexo al final de `Enunciado_Lab2.txt` (el texto original del profesor no se modificó).
 - La rúbrica (Excel) tiene erratas (S&P 500, 30/04/2026, USD 20M); las corrige el estudiante. Valen Nasdaq-100, 30/10/2026 y USD 35.000.000 (Clase 23).
 - Las 3 acciones (CSCO, ADI, PYPL) pertenecen al Nasdaq-100 (verificado por el estudiante; citar la fuente de investing.com en el Punto 1).
-- Dudas abiertas: 13 pendientes en `docs/pendientes_profesor.md`, para la asesoría del 04/11/2026.
+- Dudas abiertas para la asesoría del 04/11/2026 (`docs/pendientes_profesor.md`): P1 (roll-over: ¿siempre corto o cambio largo/corto?) y P2 (cuenta de margen mensual o trimestral).
+
+## Dudas cerradas con el propio proyecto (01/11/2026)
+
+- Tasa libre de riesgo: ^TNX (bono a 10 años), justificada en Puntos_Lab2, Punto 10.
+- Márgenes: valores reales de CME en USD por contrato (el enunciado exige la información del contrato utilizado).
+- Ticks: los precios del futuro se redondean al tick mínimo para contar ticks enteros (criterio del profesor, Clase 19).
+- Punto 12: según el enunciado (prevalece), 0,6 y 1,5 son la beta del portafolio → N* = β · Vp / (F₀ · Q_F).
+- VaR del Punto 4: VaR mensual del portafolio total (lo dice el enunciado).
+- Decisiones del estudiante (no se le preguntan al profesor; se deciden en su punto): cotas de los pesos, portafolio definitivo (GMV vs. Máx. Sharpe), tratamiento de dividendos (Close vs. Adj Close), modelado del riesgo de base y costos del roll-over, construcción del enfoque "ajustado por VaR".
 
 ## Datos
 

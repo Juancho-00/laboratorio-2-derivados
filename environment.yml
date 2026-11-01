@@ -1,0 +1,12 @@
+name: lab2-derivados
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pandas>=2.0
+  - numpy>=1.26
+  - scipy>=1.11
+  - matplotlib>=3.8
+  - openpyxl>=3.1
+  - ipykernel
+  - yfinance>=0.2.40

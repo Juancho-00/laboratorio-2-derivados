@@ -13,6 +13,7 @@ roll-over trimestral y sensibilidad a la beta.
 ```
 ├── README.md
 ├── Informe_Lab2_APA.pdf        # informe final en normas APA (se agrega al final)
+├── environment.yml           # entorno de Anaconda
 ├── requirements.txt
 ├── data/
 │   ├── raw/                    # descargas sin modificar (precios, dividendos, ^TNX)
@@ -35,7 +36,9 @@ roll-over trimestral y sensibilidad a la beta.
 ```
 
 ## Ejecución
-1. Crear un entorno e instalar dependencias: `pip install -r requirements.txt`
+1. Crear el entorno e instalar dependencias:
+   - **Anaconda (recomendado):** `conda env create -f environment.yml` y luego `conda activate lab2-derivados`
+   - **pip:** `pip install -r requirements.txt`
 2. Abrir la carpeta en VS Code y ejecutar los notebooks **en orden**:
    `00_datos` → `01_portafolio` → `02_futuros_cobertura`
 3. Los datos descargados quedan en `data/raw/` para reproducibilidad.
