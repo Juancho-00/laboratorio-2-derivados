@@ -10,3 +10,4 @@ dependencies:
   - openpyxl>=3.1
   - ipykernel
   - yfinance>=0.2.40
+  - jinja2
