@@ -1,6 +1,6 @@
 # BITÁCORA DE DECISIONES – LAB #2
 
-Última actualización: 01/11/2026
+Última actualización: 02/11/2026
 
 ## Organización del proyecto (01/11/2026)
 
@@ -10,6 +10,8 @@
 - Requisitos de la rúbrica no contemplados en el enunciado: integrados en `Puntos_Lab2.md` (v2) y como anexo al final de `Enunciado_Lab2.txt` (el texto original del profesor no se modificó).
 - La rúbrica (Excel) tiene erratas (S&P 500, 30/04/2026, USD 20M); las corrige el estudiante. Valen Nasdaq-100, 30/10/2026 y USD 35.000.000 (Clase 23).
 - Las 3 acciones (CSCO, ADI, PYPL) pertenecen al Nasdaq-100 (verificado por el estudiante; citar la fuente de investing.com en el Punto 1).
+- Referencia única: `docs/enunciado/Referencia_Lab2.md` (enunciado + rúbrica + precisiones) y `Rubrica Lab #2.xlsx`. Se retiraron `Enunciado_Lab2.txt` y `Puntos_Lab2.md` (02/11/2026).
+- Reproducibilidad (02/11/2026): 00_datos y 01_portafolio leen los CSV guardados (no re-consultan Yahoo); optimizador SLSQP con ftol = 1e-12. Ejecución completa en orden (Run All) sin errores; resultados idénticos a los reportados.
 - Dudas abiertas para la asesoría del 04/11/2026 (`docs/pendientes_profesor.md`): P1 (roll-over: ¿siempre corto o cambio largo/corto?) y P2 (cuenta de margen mensual o trimestral).
 
 ## Dudas cerradas con el propio proyecto (01/11/2026)
@@ -27,6 +29,14 @@
 - Frecuencia: diaria (k = 252) como principal para P2, P3 y P5; mensual (k = 12) para P4 y P8. Retornos logarítmicos.
 - Tipo de precio: Adj Close (retorno total). En el P11 se descompone: μ_total ≈ μ_precio (Close) + q (dividend yield), para no contar los dividendos dos veces.
 - Anualización: μ = e^(r̄·k) − 1; σ = σ_periódica · √k.
+
+## Punto 0 – Calidad de datos (cerrado 02/11/2026)
+
+- 00_datos lee los CSV de data/raw/ (ACTUALIZAR = False) para que el laboratorio sea reproducible con la descarga del 01/11/2026.
+- 0 fechas duplicadas, 0 precios ≤ 0, mayor salto entre fechas = 4 días (festivos). Extremos conservados (eventos reales): ADI y ^NDX 16/03/2020, CSCO 19/05/2022, PYPL 02/02/2022.
+- Dividendos: CSCO y ADI 40 pagos en la ventana; PYPL inició en nov-2025 (4 pagos). q últimos 12 m: CSCO 1.60 % | ADI 1.03 % | PYPL 0.98 %.
+- Aporte de dividendos al retorno anual (Adj Close − Close): CSCO ≈ 3.37 pp | ADI ≈ 2.25 pp | PYPL ≈ 0.11 pp.
+- ^NDX es índice de precio (Adj Close = Close): relevante para F₀ = S₀·e^{(r−q)T} (Punto 10).
 
 ## Tasa libre de riesgo
 
@@ -60,7 +70,7 @@
 ## Punto 3 – Markowitz
 
 - GMV: CSCO 45.00 % | ADI 33.97 % | PYPL 21.03 % · Ret 15.88 % · Vol 25.12 % · Sharpe 0.4359
-  Montos: CSCO 15,750,000 | ADI 11,889,583.81 | PYPL 7,360,416.19
+  Montos: CSCO 15,750,000 | ADI 11,889,424.90 | PYPL 7,360,575.10 (optimizador con tolerancia 1e-12; antes 11,889,583.81 / 7,360,416.19 por tolerancia por defecto)
 - Máx. Sharpe: CSCO 40.00 % | ADI 45.00 % | PYPL 15.00 % · Ret 17.39 % · Vol 25.63 % · Sharpe 0.4860
   Montos: CSCO 14,000,000 | ADI 15,750,000 | PYPL 5,250,000
 - Restricciones activas: GMV (CSCO en el techo); Máx. Sharpe (ADI en el techo, PYPL en el piso). Sin cotas, Máx. Sharpe = 39/61/0.
@@ -72,11 +82,23 @@
 
 ## Punto 4 – VaR mensual
 
-- VaR 95 %: ___ % / USD ___ | VaR 99 %: ___ % / USD ___
+- Método (decisión del estudiante): paramétrico normal con retornos log mensuales del portafolio Máx. Sharpe (120 meses). r* = μm − z·σm; VaR % = 1 − e^(r*); VaR USD = V0 · VaR %.
+- μ mensual = 1.3182 % · σ mensual = 6.0200 % · ganancia esperada del mes ≈ USD 464,433
+- VaR 95 % (al 5 %): 8.23 % / USD 2,878,978.61 | VaR 99 % (al 1 %): 11.91 % / USD 4,170,100.79
+- Validación: 7 de 120 meses superaron el VaR 95 % (se esperaban 6); 0 superaron el VaR 99 %. Peor mes: abr-2022 (−12.07 % log). Asimetría 0.09, curtosis en exceso 0.25.
+- Descomposición (modelo de mercado, mensual): β = 0.8206, R² = 0.5603 → 56 % sistemático (cubrible), 44 % específico. σ específica mensual = 3.99 %.
+- VaR con cobertura ideal del riesgo sistemático: 95 % USD 1,789,466.95 (−37.84 %) | 99 % USD 2,680,797.33 (−35.71 %). Exposición a cubrir (β mensual × V0) ≈ USD 28,720,153.
+- Archivos: var_mensual.csv, var_cubierto_vs_sin.csv · outputs/figures/var_mensual.png
 
 ## Punto 5 – Betas
 
-- CSCO ___ | ADI ___ | PYPL ___ | β portafolio ___
+- Método: regresión MCO de retornos log diarios de cada acción contra el ^NDX (01/11/2016 – 30/10/2026, 2,513 obs.); βp = Σ wi·βi con los pesos del Máx. Sharpe.
+- β diaria: CSCO 0.7149 (t 38.9; R² 37.6 %) | ADI 1.0707 (t 54.4; R² 54.1 %) | PYPL 1.0839 (t 40.1; R² 39.0 %)
+- **β portafolio = 0.9304** (verificada por regresión directa del portafolio contra el índice).
+- β mensual (comparación): CSCO 0.7173 | ADI 0.8774 | PYPL 0.9258 | βp 0.8206 → la decisión de qué beta usar para N* se toma en el Punto 6.
+- α anual: CSCO +2.49 % | ADI +1.55 % | PYPL −16.06 %. CAPM con E(rm) = 19.51 % y rf = 4.929 %: E(r) CAPM portafolio 18.49 % vs. histórico 17.39 %.
+- Exposición sistemática: βp × V0 = 0.9304 × 35,000,000 ≈ USD 32,564,000 equivalentes en el índice; una caída de 10 % del ^NDX implica ≈ −9.30 % (≈ −USD 3.26 M).
+- Archivo: data/processed/betas_capm.csv
 
 ## Puntos 6–7 – Contrato y número de contratos
 
