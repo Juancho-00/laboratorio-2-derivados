@@ -33,7 +33,7 @@ roll-over trimestral y sensibilidad a la beta.
     ├── bitacora_decisiones.md
     ├── pendientes_profesor.md
     ├── especificaciones_contrato.md
-    ├── enunciado/              # Referencia_Lab2.md (enunciado + rúbrica unificados) y rúbrica en Excel
+    ├── enunciado/              # Preguntas_Lab2.md (rúbrica + enunciado literal) y rúbrica en Excel
     └── referencias/            # Excel de ejemplo del curso
 ```
 
