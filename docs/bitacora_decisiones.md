@@ -11,7 +11,19 @@
 - Las 3 acciones (CSCO, ADI, PYPL) pertenecen al Nasdaq-100 (verificado por el estudiante; citar la fuente de investing.com en el Punto 1).
 - Referencia única: `docs/enunciado/Preguntas_Lab2.md` (rúbrica en tabla + enunciado literal del profesor + lo que la rúbrica agrega por punto) y `Rubrica Lab #2.xlsx`. Se retiraron `Enunciado_Lab2.txt` y `Puntos_Lab2.md` (02/11/2026).
 - Reproducibilidad (02/11/2026): 00_datos y 01_portafolio leen los CSV guardados (no re-consultan Yahoo); optimizador SLSQP con ftol = 1e-12. Ejecución completa en orden (Run All) sin errores; resultados idénticos a los reportados.
-- Dudas abiertas para la asesoría del 04/11/2026 (`docs/pendientes_profesor.md`): P1 (roll-over: ¿siempre corto o cambio largo/corto?) y P2 (cuenta de margen mensual o trimestral).
+
+## Respuestas del profesor (asesoría 04/11/2026) – decisiones del 05/11/2026
+
+- P1 (dirección de la cobertura): cobertura CORTA en todos los trimestres (corto absoluto) con roll-over
+  trimestral. El profesor indicó que el inversionista espera que las acciones suban y que el corto mitiga
+  las caídas fuertes. El corto es un seguro de la cartera larga, no una apuesta de dirección.
+  No se modela la alternancia largo/corto.
+- P2 (periodicidad): simulación del futuro con paso mensual (48 meses, 30/10/2026 → 30/10/2030);
+  cuenta de margen liquidada mes a mes y agrupada en 16 trimestres (T1–T16); roll-over al cierre de
+  cada trimestre.
+- Pendiente para el Punto 9: roll en fechas del trimestre de inversión o alineado a los vencimientos
+  CME (mar/jun/sep/dic).
+
 
 ## Dudas cerradas con el propio proyecto (01/11/2026)
 
@@ -99,12 +111,25 @@
 - Exposición sistemática: βp × V0 = 0.9304 × 35,000,000 ≈ USD 32,564,000 equivalentes en el índice; una caída de 10 % del ^NDX implica ≈ −9.30 % (≈ −USD 3.26 M).
 - Archivo: data/processed/betas_capm.csv
 
-## Puntos 6–7 – Contrato y número de contratos
+## Puntos 6–7 – Contrato (decisiones del 05/11/2026)
 
-- Contrato elegido: (E-mini NQ / Micro MNQ – pendiente) — Fuente: (pendiente)
-- Multiplicador ___ | Tick ___ | Precio inicial ___
-- Margen inicial ___ | Margen de mantenimiento ___
-- N* = ___ → redondeado a ___ (criterio: ___)
+- Contrato: E-mini Nasdaq-100 (NQ), vencimiento dic-2026 (NQZ6). Fuente: CME Group (Contract Specs, Margins,
+  Settlements), consulta 05/11/2026.
+- Q_F = USD 20 × índice | tick = 0,25 pts = USD 5 | vencimientos mar/jun/sep/dic, 3.er viernes |
+  liquidación en efectivo | NQZ6 vence el 18/12/2026.
+- F₀ = 28.534,00 (settle NQZ6, 30/10/2026). Exposición por contrato = USD 570.680.
+- VGM = USD 39.407 por contrato (columna corta, NQZ6). Vigente al 30/10/2026: ningún aviso de Equity de
+  CME Clearing entre el 29/10 y el 05/11 (avisos 26-356, 26-361 y 26-363 no incluyen Equity).
+- VGI₀ = 1,10 × VGM = USD 43.347,70 por contrato (regla de CME SPAN 2 para cuentas especulativas; supuesto
+  conservador; para cuentas de cobertura CME exige VGI₀ = VGM). Estructura del curso: VGM = VGI₀ × 90,9 %.
+- VGM fijo en USD durante los 4 años (no se usa la tabla de márgenes por vencimiento, porque es una foto
+  actual y no un pronóstico de los márgenes futuros). Se explica en el notebook.
+- Posición (R9): CORTA en 50 contratos NQZ6 (la entidad ya posee las acciones y teme una caída).
+  Cubre solo el riesgo sistemático (56 % de la varianza, R² del Punto 4); el específico (44 %) no se cubre.
+- Escenarios con ticks (sin riesgo de base, ΔV = βp·Δíndice·Vp): caída del 10 % → ΔF = −2,853.50 pts
+  (−11,414 ticks × USD 250) → corto +USD 2,853,500 vs. acciones −USD 2,872,100 → neto −USD 18,600
+  (residuo del redondeo de 0.33 contratos). Con largo, la pérdida sería −USD 5,725,600 (exposición duplicada).
+  Archivo: data/processed/escenarios_ticks_R9.csv
 
 ## Puntos 8–12
 
