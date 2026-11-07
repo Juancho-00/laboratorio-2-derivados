@@ -131,6 +131,19 @@
   (residuo del redondeo de 0.33 contratos). Con largo, la pérdida sería −USD 5,725,600 (exposición duplicada).
   Archivo: data/processed/escenarios_ticks_R9.csv
 
-## Puntos 8–12
+## Puntos 8–12 (06/11/2026)
 
-- (pendiente)
+- P8: MBG mensual del ^NDX (Clase 1), 10,000 trayectorias, semilla 20261030; drift y σ = retornos log mensuales
+  del ^NDX (120 m). F = S·e^{c(T−t)}, c implícito = ln(F0/S0)/T0 = 3.90 % (S0 = 28,384.85). Tabla con la
+  trayectoria de precio final mediano (#849). Roll al cierre del mes anterior al vencimiento CME (nov/feb/may/ago).
+  Resultado: P&G corto −USD 23.85 M; 9 llamados al margen; USD 24.72 M repuestos.
+- P9: 17 contratos (NQZ6→NQZ0), 16 rolls. P&G = spot −29.36 M + base +5.51 M (roll yield por contango).
+  Costos USD 7.247 por contrato y por lado (IBKR 0.85 + CME 1.386 + NFA 0.011 + 1 tick) → USD 12,320 en total.
+  Portafolio cubierto: 4.43 % anual, vol 0.69 % (sin cobertura: 16.96 %, vol 14.99 %).
+- P10: r_f = ^TNX 4.929 %; tasas efectivas: mensual 0.4018 %, trimestral 1.2101 %. E[V] a 4 años: cubierto
+  USD 41.74 M (4.50 %) vs. libre de riesgo 42.43 M vs. sin cobertura 68.91 M (18.46 %). σ baja de 21.95 M
+  a 1.81 M (−92 %). Llamados esperados 13.8; reposición esperada USD 32.0 M.
+- P11: q portafolio = 1.25 % (CSCO 1.60 %, ADI 1.03 %, PYPL 0.98 %). Con dividendos: sin cobertura USD 71.38 M,
+  cubierto USD 43.64 M (≈ 5.8 % anual > r_f). VaR 95 % del mes: 2.88 M sin cobertura vs. 1.79 M cubierto (−38 %).
+- P12: N = 36 (β 0.6), 50 (base), 91 (β 1.5). Reducción de σ: 77 % / 92 % / 65 %. Mismos llamados esperados
+  (13.8); la reposición escala con N.

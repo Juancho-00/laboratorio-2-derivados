@@ -1,0 +1,8 @@
+,Sin cobertura,Cubierto,Libre de riesgo
+E[valor final] (USD),68912453.09175916,41742614.46675917,42427767.32373235
+E[rentabilidad anual],0.18456096282855028,0.045027936748231134,
+σ del valor final (USD),21952868.755576458,1812271.2071638135,
+Percentil 5 del valor final (USD),39527393.69461688,38889717.51780943,
+Percentil 95 del valor final (USD),110251455.47682649,43579875.118133895,
+Prob. de terminar por debajo de 35 M,0.0219,0.0116,
+Prob. de no superar la tasa libre de riesgo,0.0781,0.6661,
