@@ -45,5 +45,6 @@ Aquí solo quedan las dudas de **interpretación del enunciado** que no se resue
 
 ---
 
-## Nota para el Punto 9 (decisión del estudiante, no se pregunta al profesor) ⬜
-- Los futuros Nasdaq-100 de CME vencen en mar/jun/sep/dic (tercer viernes); los trimestres de inversión van oct→ene→abr→jul. Definir al desarrollar el Punto 9: roll en las fechas del trimestre de inversión (supuesto académico) o alineado a los vencimientos de CME.
+## Nota para el Punto 9 (decisión del estudiante, no se pregunta al profesor) ✅
+- Los futuros Nasdaq-100 de CME vencen en mar/jun/sep/dic (tercer viernes); los trimestres de inversión van oct→ene→abr→jul.
+- **Decisión (10/11/2026):** roll alineado a los vencimientos de CME, al cierre del mes anterior a cada vencimiento (nov/feb/may/ago). Con roll en las fechas del trimestre de inversión no se podría arrancar con el NQZ6 (vence el 18/12/2026, antes del cierre de T1). Detalle en `bitacora_decisiones.md`.

@@ -47,7 +47,7 @@ roll-over trimestral y sensibilidad a la beta.
    - **pip:** `pip install -r requirements.txt`
 2. Abrir la carpeta en VS Code y ejecutar los notebooks **en orden**:
    `00_datos` → `01_portafolio` → `02_futuros_cobertura`
-3. Los datos de `data/raw/` (descarga del 01/11/2026; AMGN y estados financieros del 10/11/2026) se leen desde disco: los notebooks no vuelven a consultar Yahoo (`ACTUALIZAR = False` y `BAJAR_AMGN = False` en `00_datos`; los estados financieros y el consenso de EPS solo se descargan si el CSV no existe), así que los resultados son reproducibles. `00_datos` guarda `close_v2.csv`, `adj_v2.csv` y `divs_v2.csv` en `data/processed/`, que son los que leen los demás notebooks.
+3. Los datos de `data/raw/` (descarga del 01/11/2026; AMGN y estados financieros del 10/11/2026) se leen desde disco: los notebooks no vuelven a consultar Yahoo (`ACTUALIZAR = False` y `BAJAR_AMGN = False` en `00_datos`; los estados financieros y el consenso de EPS solo se descargan si el CSV no existe), así que los resultados son reproducibles. `00_datos` guarda `close_v2.csv`, `adj_v2.csv` y `divs_v2.csv` en `data/processed/`, que son los que leen los demás notebooks. El único notebook que vuelve a descargar de Yahoo es `00_screening_reemplazo` (búsqueda del reemplazo de PYPL); su resultado quedó guardado en `data/processed/screening_reemplazo_pypl.csv` y no hace falta correrlo para reproducir el laboratorio.
 
 ## Supuestos
 
