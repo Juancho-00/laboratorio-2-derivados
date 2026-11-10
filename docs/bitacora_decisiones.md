@@ -1,6 +1,27 @@
 # BITÁCORA DE DECISIONES – LAB #2
 
-Última actualización: 02/11/2026
+## CAMBIOS ASESORÍA PROFESOR (09/11/2026) – PREVALECEN SOBRE LO ANTERIOR
+
+Lo que pidió el profe:
+1. Cambiar PYPL.
+2. Portafolio de MÍNIMA VARIANZA (GMV), ya no Máx. Sharpe.
+3. Corregir el MBG: los extremos salían desfasados (el superior daba el índice ~10 veces más alto en 4 años).
+4. Trayectorias representativas: comparar el PEOR escenario sin cobertura vs. el portafolio cubierto (no mostrar el crecimiento del portafolio sin cubrir).
+5. Cuidar las unidades: simulación MENSUAL y aplicarla bien en cada parte.
+6. Comentarios y markdown más naturales, de estudiante, menos técnicos.
+
+Decisiones (10/11/2026):
+- Se hace una rama git `v2-asesoria`; `main` conserva la versión con PYPL + Máx. Sharpe.
+- Lista de componentes copiada de investing.com el 10/11/2026 → data/raw/nasdaq100_componentes_investing.csv (101 tickers).
+- Screening (notebooks/00_screening_reemplazo.ipynb → data/processed/screening_reemplazo_pypl.csv): filtro = 10 años completos, retorno 2026 > 0, ≥ 6 de 9 años en verde. Pasaron 46.
+- Hallazgo: las ganadoras de 2026 (MU, AMD, MRVL, STX) son chips con ρ alta con ADI y σ de 44–57 %; en el GMV quedan en el piso del 15 % y suben la σ del portafolio a ~27 % (con PYPL era 25,12 %). Defensivas la bajan a 18–21 %.
+- **ACCIÓN NUEVA: AMGN (Amgen)** en lugar de PYPL. Portafolio: CSCO, ADI, AMGN.
+  Por qué: retorno 2026 +45,3 %, R² de tendencia 0,93, peor caída en 10 años −25 % (la menor de las 46), σ 25,1 %, ρ baja con CSCO (0,34) y ADI (0,31). Sector salud, diversifica frente a redes y chips.
+  GMV preliminar (cotas 15–45 %): CSCO 40 / ADI 15 / AMGN 45 · σ ≈ 20,86 % · Sharpe ≈ 0,59 (se confirma en 01_portafolio).
+  Riesgo identificado: deuda alta (compra de Horizon, 2023) y liquidez corriente ajustada → analizar en el P1 con deuda neta/EBITDA, cobertura de intereses y FCF.
+- Finalistas descartadas: COST (mejor Sharpe en el GMV, pero P/E ~50×) y PANW (+98,6 % en 2026, pero P/E ~85× y sin dividendo).
+
+Resultados INVALIDADOS por el cambio (hay que rehacerlos): todo lo de PYPL en P0–P2, pesos y montos del P3, VaR (P4), betas (P5), N*, cuenta de margen, simulación MBG y roll-over (P6–P12).
 
 ## Organización del proyecto (01/11/2026)
 
@@ -41,13 +62,16 @@
 - Tipo de precio: Adj Close (retorno total). En el P11 se descompone: μ_total ≈ μ_precio (Close) + q (dividend yield), para no contar los dividendos dos veces.
 - Anualización: μ = e^(r̄·k) − 1; σ = σ_periódica · √k.
 
-## Punto 0 – Calidad de datos (cerrado 02/11/2026)
+## Punto 0 – Calidad de datos (v2, cerrado 10/11/2026)
 
-- 00_datos lee los CSV de data/raw/ (ACTUALIZAR = False) para que el laboratorio sea reproducible con la descarga del 01/11/2026.
-- 0 fechas duplicadas, 0 precios ≤ 0, mayor salto entre fechas = 4 días (festivos). Extremos conservados (eventos reales): ADI y ^NDX 16/03/2020, CSCO 19/05/2022, PYPL 02/02/2022.
-- Dividendos: CSCO y ADI 40 pagos en la ventana; PYPL inició en nov-2025 (4 pagos). q últimos 12 m: CSCO 1.60 % | ADI 1.03 % | PYPL 0.98 %.
-- Aporte de dividendos al retorno anual (Adj Close − Close): CSCO ≈ 3.37 pp | ADI ≈ 2.25 pp | PYPL ≈ 0.11 pp.
-- ^NDX es índice de precio (Adj Close = Close): relevante para F₀ = S₀·e^{(r−q)T} (Punto 10).
+- Opción B (decisión del estudiante): se conserva la descarga del 01/11/2026 para CSCO, ADI, ^NDX y ^TNX; AMGN se baja aparte el 10/11/2026 → data/raw/amgn_diario.csv (Close, Adj Close, Dividends, Stock Splits) + amgn_fecha_descarga.txt. Los CSV viejos no se modifican; PYPL se excluye al leerlos. Interruptores: ACTUALIZAR = False, BAJAR_AMGN = False.
+- Justificación de las dos fechas: el ajuste del Adj Close es multiplicativo sobre toda la historia → no cambia los retornos de la ventana. Comprobado: CSCO y ADI dan idéntico a v1.
+- Ventana 31/10/2016 → 30/10/2026: 2.514 días, 0 NaN (unión outer, sin desfases), 0 duplicados, 0 precios ≤ 0, mayor hueco 4 días. AMGN sin splits.
+- Extremos conservados: ADI y ^NDX 16/03/2020 (COVID), CSCO 19/05/2022, AMGN 03/05/2024 (+11,17 % log; resultados del 1T-2024 y datos de MariTide; fuente: BioWorld, 03/05/2024).
+- Dividendos (40 pagos en 10 años cada una; 4 en los últimos 12 m): q CSCO 1,60 % | ADI 1,03 % | AMGN 2,13 % (AMGN: USD 9,94 en 12 m).
+- Retorno anual precio / total / aporte de dividendos: CSCO 13,08 / 16,44 / 3,37 pp | ADI 20,66 / 22,91 / 2,25 pp | AMGN 12,72 / 16,14 / 3,42 pp. AMGN coincide con el screening (16,14 %).
+- Control nuevo: factor de ajuste de Yahoo vs. 1 − D/Close(t−1) en cada ex-dividendo → diferencia máxima < 0,01 pb en las tres.
+- ^NDX: Adj Close = Close (índice de precio). ^TNX al 30/10/2026 = 4,929 % (sin cambio).
 
 ## Tasa libre de riesgo
 
