@@ -1,6 +1,6 @@
 # PENDIENTES PARA PREGUNTAR AL PROFESOR – LAB #2
 
-Asesoría: **miércoles 4 de noviembre de 2026**. Entrega: miércoles 11 de noviembre a medianoche.
+Asesorías: **miércoles 4 de noviembre** y **lunes 9 de noviembre de 2026**. Entrega: miércoles 11 de noviembre a medianoche.
 Estado: ⬜ pendiente · ✅ resuelto (anotar la respuesta y pasarla a `bitacora_decisiones.md`).
 
 Aquí solo quedan las dudas de **interpretación del enunciado** que no se resuelven con el proyecto (enunciado, apuntes, Excel de ejemplo). Las decisiones metodológicas y de inversión las toma el estudiante y se registran en la bitácora.
@@ -29,6 +29,19 @@ Aquí solo quedan las dudas de **interpretación del enunciado** que no se resue
 - **Pregunta:** "¿La cuenta de margen del Punto 8 se liquida mensualmente (48 meses agrupados en 16 trimestres) o basta con 16 liquidaciones trimestrales?"
 - **Respuesta: El profesor me dijo que la cuenta del margen la podría realizar en las liquidaciones ya sea mensuales o trimestrales, pero, podríamos realizar las liquidaciones mensuales y agrupandolas por trimestres**
 - **Decisión (05/11/2026):** liquidación **mensual** (48 meses, 30/10/2026 → 30/10/2030) agrupada en 16 trimestres (T1–T16); roll-over al cierre de cada trimestre.
+
+---
+
+## P3. Revisión de la versión 1 (asesoría 09/11/2026) ✅
+
+- **Qué pidió el profesor:** cambiar PYPL; usar el portafolio de mínima varianza (GMV) en vez del de máximo Sharpe; corregir el MBG (los extremos daban el índice ~10 veces más alto en 4 años); en las trayectorias comparar el peor escenario sin cobertura con el portafolio cubierto; cuidar las unidades (simulación mensual aplicada bien en cada parte); comentarios y markdown más naturales.
+- **Decisiones (10/11/2026):**
+  - AMGN reemplaza a PYPL (screening sobre el Nasdaq-100, `notebooks/00_screening_reemplazo.ipynb`).
+  - Portafolio definitivo: GMV (CSCO 36,71 % · ADI 19,37 % · AMGN 43,92 %).
+  - Todo el laboratorio en frecuencia mensual (k = 12).
+  - Regla de pesos: las tres acciones con peso > 0 % y suma 100 % (sin cotas 15–45 %).
+  - Toda la información con corte al 30/10/2026.
+- Detalle en `bitacora_decisiones.md`.
 
 ---
 
