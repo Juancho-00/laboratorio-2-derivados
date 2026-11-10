@@ -1,0 +1,12 @@
+,(a) Sin cobertura,(b) Cubierto con futuros,(c) Ajustado por VaR – sin cobertura,(c) Ajustado por VaR – cubierto
+Rend. esperado mensual (total),0.00646840916313982,0.004588692572517317,,
+  · por precio,0.005044059373035291,0.003164342782412788,,
+  · por dividendos,0.0014243497901045288,0.0014243497901045288,,
+Rend. anual equivalente (total),0.08044278733972576,0.05647549091451598,,
+Valor esperado a 4 años (USD),47694995.72859683,43601405.95359682,,
+"  · de eso, dividendos cobrados (USD)",2792395.5502196783,2663959.628748453,,
+VaR 95 % del mes (Punto 4),0.06868203064597045,0.05414512726116072,,
+VaR 95 % del 1.er mes (simulación),0.07541041002453412,0.062438442315513626,,
+"Pérdida en un mes malo, VaR 95 % (USD, 1.er mes)",,,2403871.072608966,1895079.4541406252
+"Pérdida en un mes malo, VaR 99 % (USD, 1.er mes)",,,3526392.100858473,2829339.3289929023
+Valor a 4 años si el último mes es malo (VaR 95 %),,,44136635.50403396,41053854.058809504

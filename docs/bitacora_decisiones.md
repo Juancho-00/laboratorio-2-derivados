@@ -21,7 +21,7 @@ Decisiones (10/11/2026):
   Riesgo identificado: deuda alta (compra de Horizon, 2023) y liquidez corriente ajustada → analizar en el P1 con deuda neta/EBITDA, cobertura de intereses y FCF.
 - Finalistas descartadas: COST (mejor Sharpe en el GMV, pero P/E ~50×) y PANW (+98,6 % en 2026, pero P/E ~85× y sin dividendo).
 
-Resultados INVALIDADOS por el cambio: todo lo de la v1 (PYPL, diario, Máx. Sharpe). Ya rehechos: P0, P1, P2, P3 y P4 (10/11/2026). Pendientes: P5 y P6–P12 (02_futuros_cobertura). Los resultados v1 quedan al final como referencia.
+Resultados INVALIDADOS por el cambio: todo lo de la v1 (PYPL, diario, Máx. Sharpe). Ya rehechos: P0 a P5 (10/11/2026; 01_portafolio completo) y P6–P12 (10/11/2026; 02_futuros_cobertura completo). No quedan puntos pendientes. Los resultados v1 quedan al final como referencia.
 
 Decisiones del grupo (10/11/2026, después de la asesoría):
 - Frecuencia MENSUAL (k = 12) en todo el laboratorio: estadística, Markowitz, VaR, betas y simulación. Lo diario solo como referencia. Razón: el VaR, la simulación y la liquidación de la cuenta de margen son mensuales; así no se mezclan unidades.
@@ -48,8 +48,8 @@ Decisiones del grupo (10/11/2026, después de la asesoría):
 - P2 (periodicidad): simulación del futuro con paso mensual (48 meses, 30/10/2026 → 30/10/2030);
   cuenta de margen liquidada mes a mes y agrupada en 16 trimestres (T1–T16); roll-over al cierre de
   cada trimestre.
-- Pendiente para el Punto 9: roll en fechas del trimestre de inversión o alineado a los vencimientos
-  CME (mar/jun/sep/dic).
+- Punto 9 (resuelto 10/11/2026): roll ALINEADO A CME, al cierre del mes anterior a cada vencimiento (nov/feb/may/ago).
+  Con roll en fechas del trimestre de inversión no se podría arrancar con el NQZ6 (vence 18/12/2026, antes del cierre de T1).
 
 ## Dudas cerradas con el propio proyecto (01/11/2026)
 
@@ -128,13 +128,104 @@ Decisiones del grupo (10/11/2026, después de la asesoría):
 - Lectura: el GMV arriesga menos sin cubrir (VaR 95 % 2,40 M vs. 2,88 M en v1), pero menos riesgo es cubrible (33 % vs. 56 %); cubierto queda parecido a la v1 (1,90 M vs. 1,79 M).
 - Archivos: var_mensual_v2.csv, var_cubierto_vs_sin_v2.csv · outputs/figures/var_mensual_v2.png
 
-## Punto 5 – Betas (v2)
+## Punto 5 – Betas (v2, mensual)
 
-- Pendiente.
+- Método: regresión MCO de retornos log mensuales de cada acción contra el ^NDX (120 meses); βp = Σ wi·βi con los pesos del GMV (verificada por regresión directa: igual).
+- β: CSCO 0,7173 (t 7,44; R² 32,0 %) | ADI 0,8774 (t 8,07; R² 35,6 %) | AMGN 0,2434 (t 2,21; R² 4,0 %)
+- **β portafolio = 0,5401** (aportes: CSCO 48,7 % | ADI 31,5 % | AMGN 19,8 %).
+- CAPM mensual (rf 0,4018 %, E(rm) 1,49 %): E(r) CAPM anual CSCO 15,17 % | ADI 17,57 % | AMGN 8,31 % | portafolio 12,56 % vs. histórico 16,40 / 22,84 / 16,10 / 17,49 %. α positivo en las tres.
+- Exposición sistemática: βp × V0 = USD 18.905.159,95. ^NDX −10 % en un mes → portafolio ≈ −5,40 % (−USD 1,89 M); −20 % → −USD 3,78 M.
+- Comparación v1: βp 0,82 (mensual, Máx. Sharpe con PYPL) → ahora 0,54: menos contratos, pero solo 33 % del riesgo es cubrible (R² del P4).
+- Archivo: betas_capm_v2.csv
 
 ## Puntos 6–12 (v2)
 
-- Pendiente. Se mantienen del v1: contrato NQ (NQZ6, F₀ = 28.534,00, Q_F = USD 20, tick 0,25 = USD 5, VGM USD 39.407, VGI₀ = 1,10 × VGM), corto absoluto, liquidación mensual agrupada en 16 trimestres, roll trimestral, costos por contrato. Cambian: N*, β, MBG mensual corregido y trayectorias (peor escenario sin cobertura vs. cubierto).
+### Punto 6 – Número óptimo de contratos (v2, cerrado 10/11/2026)
+
+- Insumos leídos de los `_v2` (nada a mano): βp de betas_capm_v2.csv; pesos y montos de portafolios_markowitz_v2.csv (se verifica suma = V0 y pesos > 0); F₀ y Q_F de src/futuros.py.
+- N* = βp·Vp / (F₀·Q_F) = 0,5401 × 35.000.000 / (28.534 × 20) = 18.905.159,98 / 570.680 = **33,1274**.
+- **Decisión: 33 contratos CORTOS NQZ6 (redondeo hacia abajo).** Razón de cobertura 99,62 %; exposición cubierta USD 18.832.440; sin cubrir USD 72.719,98 (0,13 contratos). Con 34: 102,63 %, sobrecubre USD 497.960 → apuesta neta bajista (especular).
+- Incertidumbre de β (regresión mensual del GMV vs. ^NDX, 120 m): EE 0,0704, IC 95 % [0,40; 0,68] → N* entre 24,7 y 41,6. Un contrato = 0,016 de β → el 0,13 del redondeo es despreciable frente al error de β.
+- R² = 0,3327: los 33 contratos solo quitan la parte sistemática (1/3 de la varianza); el 67 % específico no se cubre con futuros del índice.
+- v1 → v2: 50 → 33 contratos (β 0,82 → 0,54, por el peso de AMGN, β 0,24).
+- Archivo: data/processed/contratos_optimos_v2.csv (insumo de P7–P12).
+
+### Punto 7 – Contrato y posición (v2, cerrado 10/11/2026)
+
+- Se mantienen del v1 las especificaciones (src/futuros.py, CME Group, consulta 05/11/2026): NQZ6, Q_F USD 20, tick 0,25 = USD 5, F₀ 28.534,00, VGM USD 39.407 (corto), VGI₀ = 1,10 × VGM = USD 43.347,70, liquidación en efectivo, MtM diario (mensual en el lab). docs/especificaciones_contrato.md diligenciado.
+- NQ vs. MNQ (Q_F = 2): MNQ daría 331 contratos (99,92 % vs. 99,62 %) y 10.592 negociados en 16 rolls vs. 1.056 con NQ → se queda el NQ.
+- Posición con N = 33: exposición cubierta USD 18.832.440 · VGI₀ total USD 1.430.474,10 · VGM total USD 1.300.431 · apalancamiento 13,17× · USD 165 por tick · franja 788,14 ticks (197 pts = 0,69 % de F₀). La franja en % es igual a la v1 (solo depende de VGI₀/VGM).
+- En 120 meses de historia, el ^NDX subió más de 0,69 % en el 61 % de los meses → llamados al margen frecuentes; hay que tener caja aparte (P8).
+- R9, escenarios con ticks (sin ruido específico): −10 % → ΔF −2.853,50 pts (−11.414 ticks) → corto +USD 1.883.310 vs. acciones −USD 1.890.516 → neto −USD 7.206 (redondeo). −20 % → neto −USD 14.577. Largo con −10 % → −USD 3.773.826 (duplica la exposición).
+- R² 0,33: riesgo propio del portafolio 1σ mensual 4,22 % ≈ USD 1.476.437, no cubrible con el índice.
+- Meses reales (escalados a V0 y F0): abr-2022 (^NDX −13,4 %) neto +USD 40.707; sep-2022 (−10,6 %) acciones −2,85 M, corto +2,00 M, neto −USD 858.475 (riesgo específico; pérdida −70 %); dic-2022 neto −USD 388.015. Alzas: jul-2022 +45.182; abr-2020 +2,55 M; abr-2026 +0,99 M.
+- Archivos: posicion_futuros_v2.csv, escenarios_ticks_R9_v2.csv, meses_reales_cobertura_v2.csv.
+
+### Punto 8 – Simulación y cuenta de margen (v2, cerrado 10/11/2026)
+
+- Calibración del MBG (decisión del estudiante, opción C "como analista"): μ del mercado = r_f + ERP = 4,929 % + 4,41 % = 9,339 % anual (ERP implícito de Damodaran, NYU Stern, al 01/11/2026; usa el T-bond a 10 años como r_f, igual que ^TNX). El ^NDX es índice de precio → se resta q = 0,46 % (dividend yield del ETF QQQM, 2026). σ histórica mensual 5,4912 % (19,02 % anual). Δt = 1/12, 48 pasos, 10.000 trayectorias, semilla 20261030. Deriva log del índice 0,5550 % mensual.
+  Por qué no A (histórica, ≈ 19,5 %): supone que se repite 2016–2026 con el NDX caro (P/E fwd ≈ 23, CAPE ≈ 59 a sep-2026, Siblis Research); gestoras esperan 4–6 % (Vanguard, Capital Group). Por qué no B (neutral al riesgo): sirve para valorar, no para proyectar (sin prima).
+- Extremos S48/S0 (C): P5 0,70 · mediana 1,30 · P95 2,45 · máx. 5,42 · prob. < S0 23,7 %. (A: 1,10 / 2,03 / 3,82 / 8,45 / 3,2 %; B: 0,59 / 1,09 / 2,04 / 4,52 / 41,2 %) → calibracion_mbg_v2.csv.
+- Futuro: F = S·e^{c(T−t)}, c = ln(F₀/S₀)/T₀ = 3,9039 %, redondeo al tick. Roll alineado a CME (al cierre de nov/feb/may/ago): NQZ6 → … → NQZ0 (17 contratos).
+- Portafolio (opción 2b): r_p = r_f + β(r_m − r_f) + ε, r_m = retorno total (precio + q), β = 0,5401, σ_ε = 4,2184 % mensual, α = 0.
+- **N = 33 fijo los 4 años (decisión del estudiante).** Se evaluó recalcular N en cada roll (bajaba la vol. mensual del cubierto de 6,86 % a 4,51 %; sin cobertura 5,20 %); se descartó.
+- Peor escenario (decisión del estudiante): por el lado del MERCADO, para mostrar para qué sirven los futuros. Grupo de trayectorias con el ^NDX final entre P4 y P6 (principal, VaR 95 %) y entre P0,5 y P1,5 (sensibilidad, VaR 99 %); dentro del grupo, la de valor sin cobertura mediano.
+  P5: trayectoria #835, ^NDX −27,2 % → sin cobertura USD 32,11 M (−2,89 M) · P&G corto +7,90 M · cubierto USD 40,01 M. Grupo (200 tray.): sin 33,45 M vs. cubierto 41,56 M.
+  P1: #4659, ^NDX −45,8 % → sin 27,18 M (−7,82 M) · corto +11,00 M · cubierto 38,18 M. Grupo (100): 27,81 M vs. 38,74 M.
+  El corto gana más que la pérdida de las acciones: β = 0,54 (parte r_f del portafolio no depende del mercado) + el corto se gana el costo de llevar (F > S). El cubierto queda cerca de r_f (35 M × 1,04929⁴ ≈ 42,43 M) → se retoma en el P10.
+- Cuenta de margen (lógica del Excel de ejemplo y Clase 18; sin retiros, sin intereses, sin costos): escenario P5 → 1 llamado (mes 2, ^NDX +7,2 %, reposición USD 1.122.660), saldo final USD 10.454.489. P1 → 2 llamados, USD 770.385.
+- Liquidez en las 10.000 trayectorias: llamados promedio 7,6 (mediana 7, P95 18); reposición total promedio USD 9,08 M (mediana 6,84 M, P95 26,16 M); mayor reposición en un mes promedio 2,22 M (P95 4,63 M). Costo real de la cobertura = liquidez cuando el mercado sube.
+- Limitación (R² 0,33): si la pérdida viene de las propias acciones y no del mercado, el futuro no ayuda (ver 7.4).
+- Archivos: calibracion_mbg_v2.csv, peor_escenario_v2.csv, cuenta_margen_mensual_v2.csv, cuenta_margen_mensual_p1_v2.csv, cuenta_margen_trimestral_v2.csv, liquidez_margen_v2.csv, simulacion_v2.npz · figuras simulacion_ndx_bandas_v2.png, peor_escenario_cubierto_v2.png.
+- Presentación de la simulación (decisión del estudiante, 10/11/2026): se lee con la BANDA P5–P95 (≈ 19.958 – 69.517 puntos en oct-2030; mediana 37.031); P99 y máximo se reportan como colas con su probabilidad. No se recorta la cola de arriba (es la que genera los llamados al margen del corto).
+  Validación: prob. de terminar por encima de S0 + 10.000 pts 46,5 % · 50.000 20,9 % · 70.000 4,8 % · 90.000 1,0 % · 100.000 0,4 %. Múltiplos a 4 años históricos 2016–2026 (73 ventanas de 48 m): mín. 1,41 · P5 1,53 · mediana 1,91 · P95 2,59 · máx. 2,77 vs. simulado: 0,28 · 0,70 · 1,30 · 2,45 · 5,42. Último cambio a 4 años del ^NDX: +16.979 puntos. → probabilidad_niveles_ndx_v2.csv, multiplos_4a_hist_vs_sim_v2.csv.
+- 8.8 Comparativa C vs. B (mismo azar). **Se queda C.** B (μ = c): retorno total del mercado 4,44 % < r_f 4,929 % (prima −0,49 %, incoherente con el lab). E[V] a 4 años: C sin 47,69 M / cubierto 43,61 M (E[P&G corto] −4,09 M = prima a la que se renuncia); B sin 43,21 M / cubierto 43,23 M (E[P&G] ≈ 0). Prob. pérdida sin/cubierto: C 24,4 % / 29,2 %; B 33,9 % / 28,4 %. Peor escenario (P5 índice): C ^NDX −27,2 % → 32,11 / 40,01 M; B −39,4 % → 29,10 / 39,06 M. Llamados prom.: C 7,6 / B 5,6; reposición prom. 9,08 / 6,13 M (P95 26,16 / 19,12 M). → comparativa_B_vs_C_v2.csv.
+- 8.3 sin notación científica (tabla formateada); se quitó la columna "% de la pérdida que compensa el futuro" (daba > 100 % y confundía).
+
+### Punto 9 – Roll-over, base y costos (v2, cerrado 10/11/2026)
+
+- Corto absoluto, N = 33 fijo, roll alineado a CME (cierre de nov/feb/may/ago): 17 contratos (NQZ6 → NQZ0), 16 rolls; NQZ6 dura 1 mes y NQZ0 2 meses. Se agrupa en trimestres de inversión T1–T16.
+- P&G_k = (F_ap − F_ci)·Q_F·N = spot −Q_F·N·(S_ci − S_ap) + base Q_F·N·(b_ci − b_ap), b = S − F (Clase 20).
+- Escenario principal (mercado en el P5, tray. #835): P&G realizado +7.901.355 (= suma mensual del P8) = spot +5.104.527 + base +2.796.828. Base al abrir ≈ −260 a −362 pts, al cerrar ≈ −40 a −65 (NQZ6 −149 → −54; NQZ0 cierra en −111). Spread promedio por roll 262,45 pts ≈ USD 173.219 (33 contratos).
+- Costos: USD 7,247 por contrato y por lado (IBKR 0,85 + CME 1,386 + NFA 0,011 + 1 tick de deslizamiento, fuentes IBKR) × 1.122 lados = USD 8.131 (≈ 0,006 % anual).
+- Rentabilidad en el escenario principal: sin cobertura −2,13 % anual (USD 32,11 M; vol. mensual 4,71 %; peor mes −11,99 %) vs. cubierto neto de costos +3,40 % anual (USD 40,01 M; vol. 4,24 %; peor mes −7,47 %).
+- 10.000 trayectorias: E[P&G corto] −4,09 M = E[spot] −7,54 M + E[base] +3,46 M (P5–P95: 2,41–4,85 M) ≈ roll yield 2,38 % anual de V0; costos −8.131.
+- Riesgo de base (sensibilidad a c): c 2,90 % → E[roll yield] 2,57 M, E[V cub neto] 42,71 M | c 3,90 % → 3,46 M, 43,60 M | c 4,90 % → 4,35 M, 44,49 M. ≈ USD 0,9 M por punto de c en 4 años.
+- Archivos: rollover_contratos_v2.csv, resumen_rollover_v2.csv, rentabilidad_roll_escenario_v2.csv, aporte_roll_10000_v2.csv, sensibilidad_base_c_v2.csv · figura rollover_base_v2.png.
+
+### Punto 10 – Valor esperado y r_f (v2, cerrado 10/11/2026)
+
+- r_f = ^TNX 4,929 % (bono a 10 años, aunque el enunciado lo llame "1 to 3 Year"); se prefiere a ^IRX por horizonte de 4 años, indicación del profe y coherencia con el ERP de Damodaran. Efectiva mensual 0,4018 %, trimestral 1,2101 % (nominales capitalizadas darían 5,04 % anual).
+- Valor esperado trimestral (10.000 tray., neto de costos): E[cobertura del trimestre] entre −0,20 M y −0,32 M; VP a r_f trimestral de los 16 trimestres = −USD 3.678.644 (precio esperado del seguro = prima de mercado a la que se renuncia; con B sería ≈ 0).
+- A 4 años: E[V] sin 47,70 M (8,04 % anual) · cubierto 43,60 M (5,65 %) · r_f 42,43 M (4,929 %). Mediana cubierto 41,59 M (< r_f; la media > r_f por la dispersión del riesgo propio). σ final 17,45 → 14,57 M (−17 %). P5 24,91 vs. 23,65 M; P95 80,37 vs. 70,09 M. Prob. < 35 M: 24,4 % vs. 29,2 %. Prob. < r_f: 43,8 % vs. 52,4 %.
+- Por quintiles del ^NDX a 4 años: Q1 (−21,7 %) sin 35,07 M vs. cub 41,80 M (+6,73 M) · Q2 (+7,2 %) 42,83 vs. 44,55 · Q3 (+30,8 %) 46,55 vs. 44,14 · Q4 (+59,5 %) 51,70 vs. 44,28 · Q5 (+125,5 %) 62,32 vs. 43,23 (−19,09 M). El cubierto queda en 41,8–44,6 M en todos.
+- Conclusión: reduce la rentabilidad esperada (−4,1 M, 8,0 % → 5,6 %) y elimina casi todo el riesgo de MERCADO, pero la dispersión total baja solo 17 % y la prob. de pérdida no mejora: R² 0,33 (riesgo propio) + se entrega la prima. Liquidez: ver 8.7.
+- Archivos: valor_esperado_trimestral_v2.csv, resumen_valor_esperado_v2.csv, valor_esperado_por_quintil_v2.csv · figura valor_esperado_cobertura_v2.png.
+
+### Punto 11 – Tres enfoques y dividendos (v2, cerrado 10/11/2026)
+
+- Dividendos 12 m (31/10/2025–30/10/2026) / precio 30/10/2026: CSCO 1,67 USD → 1,60 % · ADI 4,29 → 1,03 % · AMGN 9,94 → 2,13 %. Portafolio (pesos GMV) q = 1,7227 % anual → 0,1424 % mensual efectiva (≈ USD 49.852 el 1.er mes).
+- Sin doble conteo: la simulación ya es retorno total (betas y VaR con Adj Close; mercado rinde r_f + ERP total) → los dividendos se separan, no se suman. r_total ≈ r_precio + q_m; D_t = E[V_{t−1}]·q_m. El corto en futuros no quita los dividendos.
+- (a) Sin cobertura: rend. mensual 0,65 % (precio 0,50 % + div. 0,14 %) ≈ 8,04 % anual; E[V48] 47,69 M; dividendos cobrados 2,79 M.
+- (b) Cubierto: 0,46 % mensual (precio 0,32 % + div. 0,14 %) ≈ 5,65 % anual (> r_f 4,93 %); E[V48] 43,60 M; dividendos 2,66 M.
+- (c) Ajustado por VaR (decisión del estudiante: E[V_{t−1}]·(1 − VaR) con los VaR mensuales del P4): mes malo 95 % → pérdida 2,40 M sin vs. 1,90 M cubierto (−21 %); 99 % → 3,53 vs. 2,83 M. Valor a 4 años si el último mes es malo (95 %): 44,14 vs. 41,05 M.
+- Chequeo: VaR 95 % del 1.er mes en la simulación 7,54 % sin / 6,24 % cubierto vs. P4 6,87 % / 5,41 % (el P4 usa la media histórica, más alta).
+- Archivos: dividendos_v2.csv, tres_enfoques_mensual_v2.csv, resumen_tres_enfoques_v2.csv · figura tres_enfoques_mensual_v2.png.
+
+### Punto 12 – Sensibilidad a la beta (v2, cerrado 10/11/2026)
+
+- Misma fórmula, contrato, márgenes, roll y simulación (mismo índice y mismo ε, solo cambia β). Redondeo hacia abajo (criterio del P6).
+- β 0,6: N* 36,80 → 36 (97,8 %) · exposición 21,0 M · VGI₀ 1,56 M · USD 180/tick · índice −10 %: acciones −2,10 M, corto +2,05 M, neto −45.480.
+- β 0,5401: 33 (99,6 %) · 18,9 M · 1,43 M · USD 165/tick · neto −7.206.
+- β 1,5: N* 91,997 → 91 (98,9 %; con 92 sobrecubriría solo USD 2.560, también defendible) · 52,5 M · VGI₀ 3,94 M · USD 455/tick · −10 %: −5,25 M vs. +5,19 M, neto −56.630.
+- 10.000 tray.: E[V] sin/cub: β 0,6 48,19/43,73 M · β 0,54 47,69/43,60 · β 1,5 59,90/48,62. Reducción de σ: 19 % / 17 % / 45 %. Mercado muy malo (Q1): 34,21→41,55 · 35,07→41,80 · 23,79→42,35 M. Llamados prom. 7,6 en los tres; reposición prom. 9,91 / 9,08 / 25,04 M (P95 28,54 / 26,16 / 72,15 M).
+- Lectura: β alta exige más contratos, garantía y caja, pero la cobertura sirve más (más riesgo es de mercado). Con N fijo y β 1,5 el cubierto aún rinde 8,6 % (la exposición crece con el mercado y la cobertura queda atrás).
+- Archivos: sensibilidad_beta_v2.csv, sensibilidad_beta_montecarlo_v2.csv · figura sensibilidad_beta_v2.png.
+
+### Cierre del notebook 02 (10/11/2026)
+
+- 02_futuros_cobertura completo en v2 (P6–P12 + conclusión general reescrita). Run All sin errores en la ejecución de verificación.
+- README actualizado con los supuestos de la simulación, la cobertura y las fuentes (Damodaran, IBKR).
 
 ---
 

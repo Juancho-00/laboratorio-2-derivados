@@ -61,6 +61,12 @@ roll-over trimestral y sensibilidad a la beta.
 - Expectativa de precio a 1 año: P/E constante × EPS esperado (consenso de analistas en Yahoo Finance).
 - VaR mensual paramétrico (normal) al 95 % y 99 %.
 - Mercado para betas: ^NDX (Nasdaq-100), coherente con el futuro utilizado; betas por regresión con datos mensuales.
+- Cobertura: E-mini Nasdaq-100 (NQZ6, CME Group). N* = βp·Vp / (F₀·Q_F) = 33,13 → **33 contratos cortos** (redondeo hacia abajo: cubrir sin sobrecubrir; la diferencia es menor que el error de estimación de la β). Solo se cubre el riesgo sistemático (R² = 0,33 con el ^NDX).
+- Márgenes: VGM de CME (USD 39.407 por contrato, posición corta NQZ6) fijo los 4 años; VGI₀ = 1,10 × VGM (regla CME SPAN 2).
+- Simulación (Puntos 8–12): MBG mensual (Δt = 1/12, 48 meses, 10.000 trayectorias, semilla 20261030) del ^NDX con μ = r_f + ERP (ERP implícito de Damodaran al 01/11/2026 = 4,41 %) menos el dividend yield del índice (0,46 %) y σ histórica mensual. Se lee con la banda P5–P95. Futuro: F = S·e^{c(T−t)}, con c implícito en F₀/S₀.
+- Portafolio simulado con el modelo de mercado: r_p = r_f + β(r_m − r_f) + ε (β = 0,54, σ_ε = 4,22 % mensual, α = 0); ya es retorno total (incluye dividendos).
+- Cobertura: corto absoluto, N = 33 fijo, roll alineado a los vencimientos de CME (cierre de nov/feb/may/ago; 17 contratos, 16 rolls), liquidación mensual por ticks. Costos USD 7,247 por contrato y por lado (IBKR + CME + NFA + 1 tick).
+- Peor escenario: por caída del mercado (percentil 5 del índice a 4 años; percentil 1 como sensibilidad).
 - Detalle de cada decisión y resultado: `docs/bitacora_decisiones.md`.
 
 ## Fuentes
@@ -68,6 +74,8 @@ roll-over trimestral y sensibilidad a la beta.
 - Precios históricos: Yahoo Finance vía `yfinance` (CSCO, ADI, ^NDX y ^TNX descargados el 01/11/2026; AMGN el 10/11/2026; los CSV de `data/raw/` son la versión usada).
 - Componentes del índice: https://www.investing.com/indices/nq-100-components (consultada el 10/11/2026)
 - Especificaciones del futuro: CME Group (fecha de consulta: 05/11/2026).
+- Prima de riesgo de mercado: ERP implícito de A. Damodaran (NYU Stern) al 01/11/2026, https://pages.stern.nyu.edu/adamodar/
+- Comisiones de futuros: Interactive Brokers (comisión, tarifa CME Globex y NFA).
 - Tasa libre de riesgo: ^TNX observada el 30/10/2026 (Yahoo Finance).
 - Fundamentales: estados trimestrales de Yahoo Finance (reportes 10-Q/10-K ante la SEC), descargados el 10/11/2026 con corte al 30/10/2026. Consenso de EPS: Yahoo Finance, 10/11/2026.
 - Hechos corporativos de 2026: comunicados de resultados de cada empresa (SEC, formularios 8-K) y prensa financiera (citados en el notebook 01).
