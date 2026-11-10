@@ -4,7 +4,7 @@
 
 ## Descripción
 
-> Versión 2 (rama `v2-asesoria`), con los cambios de la asesoría del 09/11/2026: AMGN reemplaza a PYPL, portafolio de mínima varianza y todo en frecuencia mensual. La versión 1 queda en `main`.
+> Versión 2 (final), con los cambios de la asesoría del 09/11/2026: AMGN reemplaza a PYPL, portafolio de mínima varianza y todo en frecuencia mensual. La versión 1 (antes de la asesoría: PYPL y máximo Sharpe) queda guardada en la etiqueta `v1-pre-asesoria`.
 
 Diseño de una estrategia de inversión de **USD 35.000.000** en tres acciones del Nasdaq-100
 (**CSCO**, **ADI**, **AMGN**), iniciada el **30/10/2026** con horizonte de **4 años**, y su cobertura
