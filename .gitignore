@@ -10,6 +10,7 @@ venv/
 
 # Archivos temporales de Excel / Office
 ~$*
+*.docx
 
 # Sistema operativo
 desktop.ini
